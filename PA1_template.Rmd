@@ -9,6 +9,10 @@ by R.
 ```{r}
 data<-read.csv(unzip("activity.zip"), header=TRUE)
 data$date<-as.Date(data$date)
+data$interval<-sprintf("%04d", data$interval)
+data$interval<-format(strptime(data$interval, format="%H%M"), "%s")
+data$interval<-as.numeric(data$interval)
+data$interval<-data$interval-data$interval[1]
 ```
 
 ## What is mean total number of steps taken per day?
@@ -36,9 +40,10 @@ interval.
 linedata<-aggregate(steps ~ interval, data=data, FUN=mean)
 plot(x=linedata$interval, y=linedata$steps, type="l", xlab="Time", ylab="Number of steps", main="Number of steps taken throughout the course of the day")
 time<-linedata[linedata$steps==max(linedata$steps),][1]
+time<-format(as.POSIXct(as.numeric(time), origin="1960-01-01 00:00:00", tz="GMT"), "%H:%M")
 ```
 
-The five minute interval starting at minute `r time` is the time at which the most steps are taken. 
+The five minute interval starting at `r time` is the time at which the most steps are taken. 
 
 ## Imputing missing values
 
